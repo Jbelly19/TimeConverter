@@ -8,13 +8,6 @@
 import SwiftUI
 
 struct ContentView: View {
-    var timeFormat: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "hh:mm:ss"
-        return formatter
-    }
-    
-    
     struct TimeUnits {
         var unitName: String
         var unit: UnitDuration
@@ -22,21 +15,29 @@ struct ContentView: View {
     
     let timeUnits = [TimeUnits(unitName: "Seconds", unit: UnitDuration.seconds), TimeUnits(unitName: "Minutes", unit: UnitDuration.minutes), TimeUnits(unitName: "Hours", unit: UnitDuration.hours)]
     
-//    @State private var inputSeconds = ""
-    
-    @State private var inputTime = Date();
+    @State private var inputTime = "0.0.0"
     @State private var outputUnit = 0
     
-    var totalTime: Double {
-        let hours = inputTime.
+    var totalTimeSec: Measurement<UnitDuration> {
+        let inputTimeArray = inputTime.components(separatedBy: ".")
+        if inputTimeArray.count < 3 {
+            return Measurement(value: 0, unit: UnitDuration.seconds)
+        }
+        
+        let hours = Measurement(value: Double(inputTimeArray[0]) ?? 0, unit: UnitDuration.hours)
+        let minutes = Measurement(value: Double(inputTimeArray[1]) ?? 0, unit: UnitDuration.minutes)
+        let seconds = Measurement(value: Double(inputTimeArray[2]) ?? 0, unit: UnitDuration.seconds)
+        
+        return hours.converted(to: UnitDuration.seconds) + minutes.converted(to: UnitDuration.seconds) + seconds
     }
     
     var body: some View {
         NavigationView{
             Form{
-                // Input in HH:MM:SS
-                Section(header: Text("Input Time (HH:MM:SS): ")){
-                    TextField("Input Time", value: $inputTime, formatter: timeFormat)
+                // Input in HH.MM.SS
+                Section(header: Text("Input Time (HH.MM.SS): ")){
+                    TextField("Input Time", text: $inputTime)
+                        .keyboardType(.decimalPad)
                 }.textCase(nil)
                 
                 // Output Unit selection
@@ -50,7 +51,7 @@ struct ContentView: View {
                 
                 // Output
                 Section(header: Text("Total Time:")){
-                    Text("test")
+                    Text("\(totalTimeSec.converted(to: timeUnits[outputUnit].unit).description)")
                 }.textCase(nil)
             }
         }.navigationBarTitle("Time Converter")
