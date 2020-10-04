@@ -1,7 +1,3 @@
 # TimeConverter
 
-## TODO
-
-- [ ] dynamically parse input (ss, mm.ss, hh.mm.ss)
-- [ ] cap min and second input to 60
-- [ ] display warning messages on errors
+Simple time converter app that converts from "HH:MM:SS" to total Hours, Minutes or Seconds.
