@@ -15,18 +15,20 @@ struct ContentView: View {
     
     let timeUnits = [TimeUnits(unitName: "Seconds", unit: UnitDuration.seconds), TimeUnits(unitName: "Minutes", unit: UnitDuration.minutes), TimeUnits(unitName: "Hours", unit: UnitDuration.hours)]
     
-    @State private var inputTime = "0.0.0"
     @State private var outputUnit = 0
     
+    @State private var inputHours = 0
+    @State private var inputMinutes = 0
+    @State private var inputSectonds = 0
+    
+    let MAX_INPUT_HOURS = 25
+    let MAX_INPUT_MIN_SEC = 60
+    
     var totalTimeSec: Measurement<UnitDuration> {
-        let inputTimeArray = inputTime.components(separatedBy: ".")
-        if inputTimeArray.count < 3 {
-            return Measurement(value: 0, unit: UnitDuration.seconds)
-        }
         
-        let hours = Measurement(value: Double(inputTimeArray[0]) ?? 0, unit: UnitDuration.hours)
-        let minutes = Measurement(value: Double(inputTimeArray[1]) ?? 0, unit: UnitDuration.minutes)
-        let seconds = Measurement(value: Double(inputTimeArray[2]) ?? 0, unit: UnitDuration.seconds)
+        let hours = Measurement(value: Double(inputHours) , unit: UnitDuration.hours)
+        let minutes = Measurement(value: Double(inputMinutes) , unit: UnitDuration.minutes)
+        let seconds = Measurement(value: Double(inputSectonds) , unit: UnitDuration.seconds)
         
         return hours.converted(to: UnitDuration.seconds) + minutes.converted(to: UnitDuration.seconds) + seconds
     }
@@ -36,8 +38,45 @@ struct ContentView: View {
             Form{
                 // Input in HH.MM.SS
                 Section(header: Text("Input Time (HH.MM.SS): ")){
-                    TextField("Input Time", text: $inputTime)
-                        .keyboardType(.decimalPad)
+                    GeometryReader { geometry in
+                        HStack(spacing: 4){
+                            
+                            Picker("", selection: $inputHours){
+                                ForEach(0 ..< MAX_INPUT_HOURS){
+                                    Text("\($0)")
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .labelsHidden()
+                            .fixedSize(horizontal: true, vertical: true)
+                            .frame(width: geometry.size.width / 3, height: geometry.size.height, alignment: .center)
+                            .clipped()
+                            
+                            Picker("", selection: $inputMinutes){
+                                ForEach(0 ..< MAX_INPUT_MIN_SEC){
+                                    Text("\($0)")
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .labelsHidden()
+                            .fixedSize(horizontal: true, vertical: true)
+                            .frame(width: geometry.size.width / 3, height: geometry.size.height, alignment: .center)
+                            .clipped()
+                            
+                            Picker("", selection: $inputSectonds){
+                                ForEach(0 ..< MAX_INPUT_MIN_SEC){
+                                    Text("\($0)")
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .labelsHidden()
+                            .fixedSize(horizontal: true, vertical: true)
+                            .frame(width: geometry.size.width / 3, height: geometry.size.height, alignment: .center)
+                            .clipped()
+                            Spacer()
+                        }
+                        
+                    }
                 }.textCase(nil)
                 
                 // Output Unit selection
